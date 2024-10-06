@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Calculadora</title>
+
+<style>
+	
+	body{
+		background-color: lightblue;
+	}
+	
+	.calculadora{
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%,-50%);
+		border-radius: 10px;
+		padding: 15px;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		border-width: 5px;
+		border-style: groove;
+		border-color: black;
+		background-color: lightgray;
+	}
+	#display{
+		width: 260px;
+		height: 30px;
+		font-size: 22px;
+		text-align: right;
+		padding: 5px;
+		background-color: white;
+		border-style: groove;
+		border-color: black;
+		overflow-x: auto;
+		overflow-y: hidden;
+	}
+	.botao{
+		width: 50px;
+		border-radius: 5px;
+		height: 50px;
+		font-size: 20px;
+		cursor: pointer;
+		border= none;
+	}
+	#versao{
+		text-align: right;
+		padding: 1px;
+	}
+	#calc{
+		text-align: left;
+		font-size: 15px;
+		padding: 1px;
+	}
+	#nome{
+		text-align: left;
+		font-size: 35px;
+		padding: 1px;
+		margin-top: -15px;
+		margin-bottom: -5px;
+	}
+</style>
+</head>
+<body>
+<div class="calculadora">
+	<p id="calc"> Calculadora </p>
+	<p id="nome"> RoViWi </p>
+	
+	<input type="text" id="display" disabled></p>
+	<table>
+		<tr>
+			<td><button class="botao" onclick="()"></button></td>
+			<td><button class="botao" onclick="seno()">sen</button></td>
+			<td><button class="botao" onclick="cosseno()">cos</button></td>
+			<td><button class="botao" onclick="tangente()">tan</button></td>
+			<td><button class="botao" onclick="pontencia()">^</button></td>
+		</tr>
+		<tr>
+			<td><button class="botao" onclick="()"></button></td>
+			<td><button class="botao" onclick="raiz()">√</button></td>
+			<td><button class="botao" onclick="raiz3()">³√</button></td>
+			<td><button class="botao" onclick="raizE()">ⁿ√</button></td>
+			<td><button class="botao" onclick="pi()">π</button></td>
+		</tr>
+		<tr>
+			<td><button class="botao" onclick="()"></button></td>
+			<td><button class="botao" onclick="back()"><</button></td>
+			<td><button class="botao" onclick="porcentagem()">%</button></td>
+			<td><button class="botao" style="font-size: 30px;" onclick="insertOp('/')">÷</button></td>
+			<td><button class="botao" onclick="insertOp('*')">X</button></td>
+		</tr>	
+		<tr>
+			<td><button class="botao" onclick="()"></button></td>
+			<td><button class="botao" onclick="insertNum('7')">7</button></td>
+			<td><button class="botao" onclick="insertNum('8')">8</button></td>
+			<td><button class="botao" onclick="insertNum('9')">9</button></td>
+			<td><button class="botao" onclick="insertOp('-')">-</button></td>
+		</tr>
+		<tr>
+			<td><button class="botao" onclick="()"></button></td>
+			<td><button class="botao" onclick="insertNum('4')">4</button></td>
+			<td><button class="botao" onclick="insertNum('5')">5</button></td>
+			<td><button class="botao" onclick="insertNum('6')">6</button></td>
+			<td><button class="botao" onclick="insertOp('+')">+</button></td>
+		</tr>
+		<tr>
+			<td><button class="botao" onclick="()"></button></td>
+			<td><button class="botao" onclick="insertNum('1')">1</button></td>
+			<td><button class="botao" onclick="insertNum('2')">2</button></td>
+			<td><button class="botao" onclick="insertNum('3')">3</button></td>
+			<td rowspan="2"><button class="botao" style="height: 105px" onclick="calcular()">=</button></td>
+		</tr>
+		<tr>
+			<td><button class="botao" onclick="()"></button></td>
+			<td><button class="botao" onclick="clearDisplay()">C</button></td>
+			<td><button class="botao" onclick="insertNum('0')">0</button></td>
+			<td><button class="botao" onclick="insertNum('.')">.</button></td>
+		</tr>
+	</table>
+	<p id="versao"> v1.0 </p>
+</div>
+
+<script>
+	let display = document.getElementById('display');
+    let modoRaiz = false;
+	let modoPotencia = false;
+	let modoPorcentagem = false;
+	
+	function insertNum(num) {
+        display.value += num;
+    }
+	
+	function insertOp(op) {
+        display.value += ' ' + op + ' ';
+    }
+	
+	function clearDisplay() {
+        display.value = '';
+        modoRaiz = false;
+		modoPotencia = false;
+		modoPorcentagem = false;
+    }
+	
+	function back() {
+		display.value = display.value.slice(0, -1);
+	}
+	
+	function calcular() {
+        try {
+            display.value = eval(display.value);
+        } catch {
+            display.value = 'Erro';
+        }
+    }
+	
+	/*function porcentagem(){
+		let num = parseFloat(display.value);
+		if(display.value =! 0) {
+			display.value = num / 100;
+		} else {
+			display.value = 'Erro';
+		}
+	}*/
+	function porcentagem() {
+		display.value += ' % ';
+		modoPorcentagem = true;
+		document.querySelector('button[onclick="calcular()"]').onclick = function() {
+			if (modoPorcentagem) {
+				calcularPorcentagem();
+			} else {
+				calcular();
+			}
+		};
+	}
+	function calcularPorcentagem() {
+		let parts = display.value.split(' ');
+		if (parts.length === 3 && parts[1] === '%') {
+			let num = parseFloat(parts[0]);
+			let porcentagem = parseFloat(parts[2]);
+			display.value = (num / 100) * porcentagem;
+		} else {
+			display.value = 'Erro';
+		}
+	}
+	
+	function raiz(){
+		let num = parseFloat(display.value);
+		if (!isNaN(num)) {
+            display.value = Math.sqrt(num);
+        } else {
+            display.value = 'Erro';
+        }
+	}
+	
+	function raiz3(){
+		let num = parseFloat(display.value);
+		if (!isNaN(num)) {
+            display.value = Math.cbrt(num);
+        } else {
+            display.value = 'Erro';
+        }
+	}
+	
+	function raizE() {
+        display.value += ' √ ';
+        modoRaiz = true;
+		document.querySelector('button[onclick="calcular()"]').onclick = function() {
+			if (modoRaiz) {
+				calcularRaiz();
+			} else {
+				calcular();
+			}
+		};
+    }
+    function calcularRaiz() {
+        let parts = display.value.split(' ');
+        if (parts.length === 3 && parts[1] === '√') {
+            let base = parseFloat(parts[0]);
+            let index = parseFloat(parts[2]);
+            display.value = Math.pow(index, 1 / base);
+        } else {
+            display.value = 'Erro';
+        }
+    }
+	
+	function pi(){
+		display.value = Math.PI.toFixed(20);
+	}
+	
+	function seno(){
+		let num = parseFloat(display.value);
+		if (!isNaN(num)) {
+            display.value = Math.sin(num).toFixed(20);
+        } else {
+            display.value = 'Erro';
+        }
+	}
+	
+	function cosseno(){
+		let num = parseFloat(display.value);
+		if (!isNaN(num)) {
+            display.value = Math.cos(num);
+        } else {
+            display.value = 'Erro';
+        }
+	}
+	
+	function tangente(){
+		let num = parseFloat(display.value);
+		if (!isNaN(num)) {
+            display.value = Math.tan(num);
+        } else {
+            display.value = 'Erro';
+        }
+	}
+	
+	function pontencia() {
+        display.value += ' ^ ';
+        modoPotencia = true;
+		document.querySelector('button[onclick="calcular()"]').onclick = function() {
+			if (modoPotencia) {
+				calcularPotencia();
+			} else {
+				calcular();
+			}
+		};
+    }
+    function calcularPotencia() {
+        let parts = display.value.split(' ');
+        if (parts.length === 3 && parts[1] === '^') {
+            let base = parseFloat(parts[0]);
+            let expoente = parseFloat(parts[2]);
+            display.value = Math.pow(base, expoente);
+        } else {
+            display.value = 'Erro';
+        }
+    }
+	
+</script>
+
+</body>
+</html>
